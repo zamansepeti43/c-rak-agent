@@ -15,6 +15,12 @@ function projectRoot(): string { return path.resolve(__dirname, "..", ".."); }
 function startAgent() {
   if (agent && !agent.killed) return;
   const root = projectRoot();
+  const packageJson = path.join(root, "package.json");
+  if (!fs.existsSync(packageJson)) {
+    mainWindow?.webContents.send("agent-output", `[Agent error] package.json bulunamadı: ${packageJson}`);
+    mainWindow?.webContents.send("agent-status", "stopped");
+    return;
+  }
   const command = process.platform === "win32" ? "cmd.exe" : "npm";
   const args = process.platform === "win32" ? ["/c", "npm.cmd", "run", "dev"] : ["run", "dev"];
   agent = spawn(command, args, {
@@ -24,7 +30,11 @@ function startAgent() {
   });
   agent.stdout.on("data", data => mainWindow?.webContents.send("agent-output", data.toString()));
   agent.stderr.on("data", data => mainWindow?.webContents.send("agent-output", data.toString()));
-  agent.on("close", () => { agent = null; mainWindow?.webContents.send("agent-status", "stopped"); });
+  agent.on("close", code => {
+    agent = null;
+    mainWindow?.webContents.send("agent-output", `\n[Agent exited] code=${code}\n`);
+    mainWindow?.webContents.send("agent-status", "stopped");
+  });
   agent.on("error", error => mainWindow?.webContents.send("agent-output", `\n[Agent error] ${error.message}\n`));
   mainWindow?.webContents.send("agent-status", "running");
 }
@@ -51,26 +61,11 @@ function createWindow() {
   });
 
   const htmlPath = path.join(__dirname, "index.html");
-  const details = `\n[Çırak UI debug]\n__dirname=${__dirname}\nHTML=${htmlPath}\nexists=${fs.existsSync(htmlPath)}\nagentRoot=${projectRoot()}\n`;
-
-  mainWindow.webContents.on("console-message", (_event, level, message, line, sourceId) => {
-    mainWindow?.webContents.send("agent-output", `[UI console ${level}] ${message} (${sourceId}:${line})`);
-  });
-
   if (!fs.existsSync(htmlPath)) {
-    mainWindow.loadURL(`data:text/html;charset=utf-8,<body style="background:#08090c;color:white;font-family:Segoe UI;padding:32px"><h2>Çırak arayüz dosyası bulunamadı</h2><pre>${encodeURIComponent(details)}</pre></body>`);
+    mainWindow.loadURL(`data:text/html;charset=utf-8,<body style="background:#08090c;color:white;font-family:Segoe UI;padding:32px"><h2>Çırak arayüz dosyası bulunamadı</h2><p>${encodeURIComponent(htmlPath)}</p></body>`);
   } else {
-    mainWindow.loadURL(`file://${htmlPath.replaceAll("\\", "/")}`);
+    mainWindow.loadFile(htmlPath);
   }
-
-  mainWindow.webContents.on("did-finish-load", () => {
-    mainWindow?.webContents.send("agent-output", details + "[UI] did-finish-load");
-  });
-
-  mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDescription, validatedURL) => {
-    mainWindow?.webContents.openDevTools({ mode: "detach" });
-    mainWindow?.webContents.send("agent-output", `[UI failed] ${errorCode}: ${errorDescription}\nURL=${validatedURL}${details}`);
-  });
 
   mainWindow.on("close", event => {
     if (!isQuitting) {
