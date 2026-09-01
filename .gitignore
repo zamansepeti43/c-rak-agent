@@ -1,26 +1,17 @@
-node_modules/
-.env
-.env.*
-!.env.example
 
-# Build output
-dist/
-out/
-*.tsbuildinfo
+video-engine/.venv/
+video-engine/.env
+video-engine/.git/
+video-engine/**/__pycache__/
+video-engine/**/.pytest_cache/
+video-engine/**/node_modules/
 
-# Runtime/video output
-video/output/
-video/assets/generated/
-VIDEO-SISTEMI/output/
-
-# Logs
-*.log
-
-# OS / editor
-.DS_Store
-Thumbs.db
-.vscode/*.log
-
-# Secrets / certificates
-*.key
-*.pem
+video-engine/.venv/
+video-engine/.env
+video-engine/.git/
+video-engine/**/__pycache__/
+video-engine/**/.pytest_cache/
+video-engine/**/node_modules/
+video-engine/**/output/
+video-engine/**/outputs/
+video-engine/**/renders/
