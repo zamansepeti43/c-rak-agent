@@ -9,7 +9,7 @@ let tray: Tray | null = null;
 let agent: ChildProcessWithoutNullStreams | null = null;
 let isQuitting = false;
 
-function projectRoot(): string { return path.resolve(__dirname, "../.."); }
+function projectRoot(): string { return path.resolve(__dirname, "../..", ".."); }
 
 function startAgent() {
   if (agent && !agent.killed) return;
@@ -49,16 +49,20 @@ function createWindow() {
     backgroundColor: "#08090c",
   });
 
+  // In the compiled app, index.html stays beside main.js inside dist.
+  // Use an absolute file URL so Electron never resolves it against the app root incorrectly.
   const htmlPath = path.join(__dirname, "index.html");
   const details = `\n[Çırak UI debug]\n__dirname=${__dirname}\nHTML=${htmlPath}\nexists=${fs.existsSync(htmlPath)}\n`;
+
   mainWindow.webContents.on("console-message", (_event, level, message, line, sourceId) => {
     mainWindow?.webContents.send("agent-output", `[UI console ${level}] ${message} (${sourceId}:${line})`);
   });
 
-  mainWindow.loadFile(htmlPath).catch(error => {
-    mainWindow?.webContents.openDevTools({ mode: "detach" });
-    mainWindow?.webContents.send("agent-output", `[UI load error] ${String(error)}${details}`);
-  });
+  if (!fs.existsSync(htmlPath)) {
+    mainWindow.loadURL(`data:text/html;charset=utf-8,<body style="background:#08090c;color:white;font-family:Segoe UI;padding:32px"><h2>Çırak arayüz dosyası bulunamadı</h2><pre>${encodeURIComponent(details)}</pre></body>`);
+  } else {
+    mainWindow.loadURL(`file://${htmlPath.replaceAll("\\", "/")}`);
+  }
 
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow?.webContents.send("agent-output", details + "[UI] did-finish-load");
