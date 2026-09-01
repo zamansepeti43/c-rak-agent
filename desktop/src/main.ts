@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell } from "electron";
 import path from "node:path";
 import { spawn, ChildProcessWithoutNullStreams } from "node:child_process";
+import fs from "node:fs";
 import { createVoiceController, VoiceState } from "./voice";
 
 let mainWindow: BrowserWindow | null = null;
@@ -35,23 +36,45 @@ function sendTask(text: string) {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1120, height: 780, minWidth: 820, minHeight: 600, title: "Çırak",
-    webPreferences: { preload: path.join(__dirname, "preload.js"), contextIsolation: true, nodeIntegration: false },
+    width: 1120,
+    height: 780,
+    minWidth: 820,
+    minHeight: 600,
+    title: "Çırak",
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
     backgroundColor: "#08090c",
   });
 
   const htmlPath = path.join(__dirname, "index.html");
+  const details = `\n[Çırak UI debug]\n__dirname=${__dirname}\nHTML=${htmlPath}\nexists=${fs.existsSync(htmlPath)}\n`;
+  mainWindow.webContents.on("console-message", (_event, level, message, line, sourceId) => {
+    mainWindow?.webContents.send("agent-output", `[UI console ${level}] ${message} (${sourceId}:${line})`);
+  });
+
   mainWindow.loadFile(htmlPath).catch(error => {
     mainWindow?.webContents.openDevTools({ mode: "detach" });
-    mainWindow?.webContents.send("agent-output", `[UI load error] ${String(error)}`);
+    mainWindow?.webContents.send("agent-output", `[UI load error] ${String(error)}${details}`);
   });
 
-  mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDescription) => {
+  mainWindow.webContents.on("did-finish-load", () => {
+    mainWindow?.webContents.send("agent-output", details + "[UI] did-finish-load");
+  });
+
+  mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDescription, validatedURL) => {
     mainWindow?.webContents.openDevTools({ mode: "detach" });
-    mainWindow?.webContents.send("agent-output", `[UI failed] ${errorCode}: ${errorDescription}`);
+    mainWindow?.webContents.send("agent-output", `[UI failed] ${errorCode}: ${errorDescription}\nURL=${validatedURL}${details}`);
   });
 
-  mainWindow.on("close", event => { if (!isQuitting) { event.preventDefault(); mainWindow?.hide(); } });
+  mainWindow.on("close", event => {
+    if (!isQuitting) {
+      event.preventDefault();
+      mainWindow?.hide();
+    }
+  });
 }
 
 const voice = createVoiceController((state: VoiceState) => mainWindow?.webContents.send("voice-state", state));
