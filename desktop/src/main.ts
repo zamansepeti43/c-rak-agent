@@ -39,7 +39,18 @@ function createWindow() {
     webPreferences: { preload: path.join(__dirname, "preload.js"), contextIsolation: true, nodeIntegration: false },
     backgroundColor: "#08090c",
   });
-  mainWindow.loadFile(path.join(__dirname, "index.html"));
+
+  const htmlPath = path.join(__dirname, "index.html");
+  mainWindow.loadFile(htmlPath).catch(error => {
+    mainWindow?.webContents.openDevTools({ mode: "detach" });
+    mainWindow?.webContents.send("agent-output", `[UI load error] ${String(error)}`);
+  });
+
+  mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDescription) => {
+    mainWindow?.webContents.openDevTools({ mode: "detach" });
+    mainWindow?.webContents.send("agent-output", `[UI failed] ${errorCode}: ${errorDescription}`);
+  });
+
   mainWindow.on("close", event => { if (!isQuitting) { event.preventDefault(); mainWindow?.hide(); } });
 }
 
