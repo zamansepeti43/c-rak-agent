@@ -9,7 +9,8 @@ let tray: Tray | null = null;
 let agent: ChildProcessWithoutNullStreams | null = null;
 let isQuitting = false;
 
-function projectRoot(): string { return path.resolve(__dirname, "../..", ".."); }
+// desktop/dist/main.js -> repo root is two levels up: dist -> desktop -> repo
+function projectRoot(): string { return path.resolve(__dirname, "..", ".."); }
 
 function startAgent() {
   if (agent && !agent.killed) return;
@@ -49,10 +50,8 @@ function createWindow() {
     backgroundColor: "#08090c",
   });
 
-  // In the compiled app, index.html stays beside main.js inside dist.
-  // Use an absolute file URL so Electron never resolves it against the app root incorrectly.
   const htmlPath = path.join(__dirname, "index.html");
-  const details = `\n[Çırak UI debug]\n__dirname=${__dirname}\nHTML=${htmlPath}\nexists=${fs.existsSync(htmlPath)}\n`;
+  const details = `\n[Çırak UI debug]\n__dirname=${__dirname}\nHTML=${htmlPath}\nexists=${fs.existsSync(htmlPath)}\nagentRoot=${projectRoot()}\n`;
 
   mainWindow.webContents.on("console-message", (_event, level, message, line, sourceId) => {
     mainWindow?.webContents.send("agent-output", `[UI console ${level}] ${message} (${sourceId}:${line})`);
