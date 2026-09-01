@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell } from "electron";
 import path from "node:path";
 import { spawn, ChildProcessWithoutNullStreams } from "node:child_process";
+import { createVoiceController, VoiceState } from "./voice";
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
@@ -56,6 +57,10 @@ function createWindow() {
   });
 }
 
+const voice = createVoiceController((state: VoiceState) => {
+  mainWindow?.webContents.send("voice-state", state);
+});
+
 app.whenReady().then(() => {
   createWindow();
   startAgent();
@@ -75,6 +80,11 @@ ipcMain.on("task", (_event, text: string) => sendTask(text));
 ipcMain.on("start-agent", () => startAgent());
 ipcMain.on("hide-window", () => mainWindow?.hide());
 ipcMain.on("quit-app", () => { isQuitting = true; app.quit(); });
+ipcMain.handle("voice-speak", async (_event, text: string) => {
+  await voice.speak(text);
+  return true;
+});
+ipcMain.handle("voice-listen", async () => voice.listenOnce());
 
 app.on("before-quit", () => {
   isQuitting = true;
