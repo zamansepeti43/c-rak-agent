@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Çırak</title>
+  <style>
+    :root { font-family: Inter, Segoe UI, Arial, sans-serif; color: #f5f7fb; background: #08090c; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top right, #162033 0, #0b0d12 38%, #08090c 100%); }
+    .shell { display: grid; grid-template-columns: 250px 1fr; height: 100vh; }
+    aside { padding: 28px 20px; border-right: 1px solid rgba(255,255,255,.08); background: rgba(7,9,13,.76); backdrop-filter: blur(16px); }
+    .brand { font-size: 28px; font-weight: 800; letter-spacing: .4px; }
+    .muted { color: #8f98aa; font-size: 13px; }
+    .status { margin-top: 28px; padding: 14px; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; background: rgba(255,255,255,.03); }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: #6b7280; margin-right: 8px; }
+    main { display: flex; flex-direction: column; min-width: 0; }
+    header { padding: 20px 28px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; justify-content: space-between; align-items: center; }
+    .hero { padding: 28px; }
+    .chat { flex: 1; overflow: auto; padding: 0 28px 120px; }
+    .message { max-width: 820px; margin: 14px 0; padding: 16px 18px; border-radius: 16px; white-space: pre-wrap; line-height: 1.55; }
+    .user { margin-left: auto; background: #1a2230; border: 1px solid rgba(255,255,255,.08); }
+    .assistant { background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.07); }
+    .composer { position: fixed; left: 250px; right: 0; bottom: 0; padding: 18px 28px 24px; background: linear-gradient(to top, rgba(8,9,12,1), rgba(8,9,12,.88), transparent); }
+    .row { display: flex; gap: 10px; max-width: 980px; margin: 0 auto; }
+    textarea { flex: 1; resize: none; min-height: 56px; max-height: 160px; padding: 15px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.1); background: #11151c; color: #fff; outline: none; }
+    button { border: 0; border-radius: 14px; padding: 0 20px; font-weight: 700; cursor: pointer; background: #f4b942; color: #17120a; }
+    .secondary { background: #181d26; color: #f5f7fb; border: 1px solid rgba(255,255,255,.08); }
+    @media (max-width: 800px) { .shell { grid-template-columns: 1fr; } aside { display: none; } .composer { left: 0; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand">🤖 Çırak</div>
+      <div class="muted">Yerel masaüstü asistanı</div>
+      <div class="status"><span class="dot" id="dot"></span><span id="status">Başlatılıyor...</span></div>
+      <div class="status" style="margin-top:14px"><strong>Hazır olduğu işler</strong><div class="muted" style="margin-top:8px;line-height:1.6">Kod • Dosya • Terminal • Video • Ses</div></div>
+    </aside>
+    <main>
+      <header><div><strong>Çırak Desktop</strong><div class="muted">Konuş, görev ver, sonucu takip et.</div></div><button class="secondary" id="start">Agent'i Başlat</button></header>
+      <div class="hero"><h1 style="margin:0 0 8px">Bugün ne yapalım?</h1><div class="muted">Örneğin: “Çırak, kaybolan tavşan hakkında bir çocuk videosu üret.”</div></div>
+      <section class="chat" id="chat"></section>
+    </main>
+  </div>
+  <div class="composer"><div class="row"><textarea id="input" placeholder="Çırağa bir görev ver..."></textarea><button id="send">Gönder</button></div></div>
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+    const send = document.getElementById('send');
+    const start = document.getElementById('start');
+    const status = document.getElementById('status');
+    const dot = document.getElementById('dot');
+    function add(role, text) {
+      const el = document.createElement('div'); el.className = `message ${role}`; el.textContent = text; chat.appendChild(el); chat.scrollTop = chat.scrollHeight;
+    }
+    function doSend() { const text = input.value.trim(); if (!text) return; add('user', text); window.cirak.sendTask(text); input.value=''; }
+    send.onclick = doSend; start.onclick = () => window.cirak.startAgent();
+    input.addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); doSend(); } });
+    window.cirak.onOutput(t => add('assistant', t.trim()));
+    window.cirak.onStatus(s => { status.textContent = s === 'running' ? 'Agent çalışıyor' : 'Agent durdu'; dot.style.background = s === 'running' ? '#3ddc97' : '#6b7280'; });
+    add('assistant', 'Merhaba. Çırak hazır olduğunda görevini söyleyebilirsin.');
+  </script>
+</body>
+</html>
