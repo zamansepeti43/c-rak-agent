@@ -128,22 +128,21 @@ def synthesize_voice(story: dict[str, Any], name: str) -> Path:
 
 
 def resolve_scene_assets(story: dict[str, Any]) -> list[dict[str, Any]]:
-    """Prefer real AI-generated scene media; fall back to local assets honestly."""
+    """Generate real scene media through the existing provider stack when configured."""
     MEDIA_DIR.mkdir(parents=True, exist_ok=True)
-    provider_keys = (
+    keys = (
         "FAL_KEY", "FAL_AI_API_KEY", "GOOGLE_API_KEY", "GEMINI_API_KEY",
         "KLING_API_KEY", "REPLICATE_API_TOKEN", "XAI_API_KEY", "OPENAI_API_KEY",
     )
-    has_provider = any(os.environ.get(key) for key in provider_keys)
-    if has_provider:
+    if any(os.environ.get(key) for key in keys):
         try:
+            generated = generate_story_media(story, MEDIA_DIR)
             return [
-                {**item, "scene": story["scenes"][index - 1]}
-                for index, item in enumerate(generate_story_media(story, MEDIA_DIR), 1)
+                {**item, "source_kind": "ai_generated", "scene": story["scenes"][index - 1]}
+                for index, item in enumerate(generated, 1)
             ]
         except Exception as exc:
-            print(f"Uyarı: AI sahne üretimi başarısız, yerel fallback kullanılıyor: {exc}")
-
+            print(f"Uyarı: AI sahne üretimi başarısız; yerel fallback kullanılıyor: {exc}")
     return resolve_story_assets(story)
 
 
@@ -165,7 +164,7 @@ def make_props(story: dict[str, Any], audio: Path, name: str) -> Path:
             raise FileNotFoundError(f"Sahne varlığı bulunamadı: {source_path}")
         ext = source_path.suffix.lower()
         is_video = ext in {".mp4", ".mov", ".webm", ".mkv", ".avi"}
-        if asset.get("source_kind") == "svg_fallback":
+        if asset.get("source_kind") in {"svg_fallback", "local_asset"}:
             degraded.append(scene_id)
         cuts.append({
             "id": scene_id,
@@ -175,6 +174,9 @@ def make_props(story: dict[str, Any], audio: Path, name: str) -> Path:
             "out_seconds": current + duration,
             "animation": str(scene.get("camera") or animations[(index - 1) % len(animations)]),
             "source_in_seconds": 0,
+            "transition_in": "fade",
+            "transition_out": "fade",
+            "transition_duration": 0.35,
         })
         current += duration
 
@@ -190,9 +192,7 @@ def make_props(story: dict[str, Any], audio: Path, name: str) -> Path:
             "accentColor": "#FFB347",
         }],
         "captions": [],
-        "audio": {
-            "narration": {"src": f"audio/{audio.name}", "volume": 1},
-        },
+        "audio": {"narration": {"src": f"audio/{audio.name}", "volume": 1}},
         "metadata": {
             "character_bible": story.get("character_bible", ""),
             "style": story.get("style", ""),
@@ -227,17 +227,11 @@ def main() -> None:
     name = f"cirak-{safe or 'video'}"
     print("Çırak: Türkçe ses oluşturuluyor...")
     audio = synthesize_voice(story, name)
-    print("Çırak: sahneler için AI medya hazırlanıyor...")
+    print("Çırak: AI sahneleri hazırlanıyor...")
     props = make_props(story, audio, name)
     print("Çırak: final video render ediliyor...")
     video = render(name, props)
-    print(json.dumps({
-        "ok": True,
-        "title": story["title"],
-        "scenes": len(story["scenes"]),
-        "audio": str(audio),
-        "video": str(video),
-    }, ensure_ascii=False))
+    print(json.dumps({"ok": True, "title": story["title"], "scenes": len(story["scenes"]), "audio": str(audio), "video": str(video)}, ensure_ascii=False))
 
 
 if __name__ == "__main__":
