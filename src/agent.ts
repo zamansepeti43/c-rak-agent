@@ -136,15 +136,9 @@ function parseSimpleFileTask(task: string): { action: ToolAction; response: stri
   const desktopDir = path.join(path.dirname(workspace), "Desktop");
   const target = path.resolve(desktopDir, filename);
   const relativePath = path.relative(workspace, target);
-  if (relativePath.startsWith("..")) {
-    return {
-      action: { type: "final", summary: "Masaüstüne dosya yazma isteği workspace sınırı dışında." },
-      response: "Workspace sınırları dışında dosya oluşturamam."
-    };
-  }
   return {
-    action: { type: "tool", tool: "create_file", path: relativePath, content },
-    response: `Dosya oluşturuldu: ${relativePath}`
+    action: { type: "tool", tool: "create_file", path: target, content },
+    response: `Dosya oluşturuldu: ${target}`
   };
 }
 
@@ -204,7 +198,7 @@ async function runAgent(task: string): Promise<void> {
 
 function buildSystemPrompt(task: string, files: string[], relevant: string[], history: string, records: ToolRecord[]): string {
   const recent = records.slice(-8).map((r) => `ACTION: ${JSON.stringify(r.action)}\nRESULT: ${r.result}`).join("\n\n");
-  return `Sen Çırak 0.6'sın. Gerçek bir coding ve desktop agent'sın.\n\nWORKSPACE:\n${workspace}\n\nGÖREV:\n${task}\n\nMEVCUT DOSYALAR:\n${files.slice(0, 300).join("\n")}\n\nİLGİLİ DOSYALAR:\n${relevant.join("\n")}\n\nARAÇ GEÇMİŞİ:\n${history}\n\nSON ARAÇLAR:\n${recent}\n\nKurallar:\n1. Gerçek dosyayı görmeden kod uydurma.\n2. Var olan dosyayı değiştirmeden önce oku.\n3. Workspace dışına çıkma.\n4. Hatalı sonucu başarılı kabul etme.\n5. Değişiklik yaptıysan doğrulama yap.\n\nAraçlar:\n{"type":"tool","tool":"list_files"}\n{"type":"tool","tool":"read_file","path":"src/example.ts"}\n{"type":"tool","tool":"search_files","query":"example"}\n{"type":"tool","tool":"write_file","path":"src/example.ts","content":"..."}\n{"type":"tool","tool":"create_file","path":"src/example.txt","content":"..."}\n{"type":"tool","tool":"delete_file","path":"src/example.txt"}\n{"type":"tool","tool":"run_command","command":"npm run build"}\n{"type":"tool","tool":"video_producer","prompt":"1 dakikalık çocuk hikayesi videosu üret"}\n\nHer cevapta SADECE geçerli JSON döndür. Markdown kullanma.`;
+  return `Sen Çırak 0.6'sın. Gerçek bir coding ve desktop agent'sın.\n\nWORKSPACE:\n${workspace}\n\nGÖREV:\n${task}\n\nMEVCUT DOSYALAR:\n${files.slice(0, 300).join("\n")}\n\nİLGİLİ DOSYALAR:\n${relevant.join("\n")}\n\nARAÇ GEÇMİŞİ:\n${history}\n\nSON ARAÇLAR:\n${recent}\n\nKurallar:\n1. Gerçek dosyayı görmeden kod uydurma.\n2. Var olan dosyayı değiştirmeden önce oku.\n3. Workspace dışına çıkma.\n4. Hatalı sonucu başarılı kabul etme.\n5. Değişiklik yaptıysan doğrulama yap.\n\nAraçlar:\n{"type":"tool","tool":"list_files"}\n{"type":"tool","tool":"read_file","path":"src/example.ts"}\n{"type":"tool","tool":"search_files","query":"example"}\n{"type":"tool","tool":"write_file","path":"src/example.ts","content":"..."}\n{"type":"tool","tool":"create_file","path":"src/example.txt","content":"..."}\n{"type":"tool","tool":"delete_file","path":"src/example.txt"}\n{"type":"tool","tool":"run_command","command":"npm run build"}\n{"type":"tool","tool":"video_producer","prompt":"1 dakikalık çocuk hikayesi videosu üret"}\n\nHer cevapta SADECE geçerli JSON döndür.`;
 }
 
 async function main(): Promise<void> {
