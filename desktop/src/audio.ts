@@ -8,23 +8,19 @@ type SpeakOptions = {
   voice?: string;
 };
 
-/**
- * Windows-first local voice bridge.
- *
- * STT intentionally stays opt-in through a configurable command so the
- * desktop app does not pretend that a microphone stack is installed when it
- * is not. TTS uses PowerShell's built-in SpeechSynthesizer by default.
- */
-export function speakLocal({ text, rate = 0 }: SpeakOptions): Promise<void> {
+/** Windows-first local voice bridge. */
+export function speakLocal({ text, rate = 0, voice }: SpeakOptions): Promise<void> {
   return new Promise((resolve, reject) => {
     const escaped = text.replace(/'/g, "''");
     const rateLiteral = Math.max(-10, Math.min(10, Math.trunc(rate)));
-    const voiceClause = "";
+    const voiceLiteral = voice?.trim()
+      ? `$s.SelectVoice('${voice.trim().replace(/'/g, "''")}')`
+      : "";
     const script = [
       "Add-Type -AssemblyName System.Speech",
       "$s=New-Object System.Speech.Synthesis.SpeechSynthesizer",
       `$s.Rate=${rateLiteral}`,
-      voiceClause,
+      voiceLiteral,
       `$s.Speak('${escaped}')`,
       "$s.Dispose()",
     ].filter(Boolean).join(";");
@@ -45,7 +41,7 @@ export function speakLocal({ text, rate = 0 }: SpeakOptions): Promise<void> {
   });
 }
 
+/** STT is opt-in through CIRAK_STT_COMMAND; it must print recognized text to stdout. */
 export function getSpeechToTextCommand(): string | null {
-  const configured = process.env.CIRAK_STT_COMMAND?.trim();
-  return configured || null;
+  return process.env.CIRAK_STT_COMMAND?.trim() || null;
 }
