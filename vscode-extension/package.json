@@ -1,0 +1,52 @@
+{
+  "name": "cirak-vscode",
+  "displayName": "Çırak",
+  "description": "Çırak Code Agent - VS Code entegrasyonu",
+  "version": "0.1.0",
+  "publisher": "cirak",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:cirak.chat"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "cirak.open",
+        "title": "Çırak: Aç"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cirak",
+          "title": "Çırak",
+          "icon": "media/cirak.svg"
+        }
+      ]
+    },
+    "views": {
+      "cirak": [
+        {
+          "id": "cirak.chat",
+          "name": "Çırak",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.7.0"
+  }
+}
