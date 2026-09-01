@@ -94,27 +94,6 @@ function isVideoRequest(text: string): boolean {
   return /\b(video|videoyu|video\s+uret|video\s+olustur|video\s+hazirla|cocuk\s+hikayesi|cocuk\s+hikayesi\s+uret|cocuk\s+hikayesi\s+olustur|hikaye\s+uret|hikaye\s+olustur|masal\s+uret|masal\s+olustur|animasyon\s+uret|animasyon\s+olustur)\b/i.test(normalized);
 }
 
-function parseSimpleFileTask(task: string): { action: ToolAction; response: string } | null {
-  const normalized = normalizeCommandText(task);
-  if (!/(masaustunde|masaustu|desktop)/i.test(normalized)) return null;
-  const createMatch = normalized.match(/(?:adinda|isimli)\s+([\w.-]+)\s+adli\s+bir\s+dosya\s+olustur/i);
-  const contentMatch = task.match(/icine\s+["“”']([^"“”']+)["“”']/i);
-  if (!createMatch) return null;
-  const filename = createMatch[1];
-  const content = contentMatch?.[1] ?? "";
-  const relativePath = path.relative(workspace, path.join(path.dirname(workspace), "Desktop", filename));
-  if (!relativePath || relativePath.startsWith("..")) {
-    return {
-      action: { type: "final", summary: "Masaüstüne dosya yazma isteği mevcut workspace sınırları dışında." },
-      response: "Workspace sınırları dışında dosya oluşturamam."
-    };
-  }
-  return {
-    action: { type: "tool", tool: "create_file", path: relativePath, content },
-    response: `Dosya oluşturuldu: ${relativePath}`
-  };
-}
-
 async function executeVideoProducer(prompt: string): Promise<string> {
   const script = path.join(videoEngine, "cirak_video_pipeline.py");
   if (!fs.existsSync(script)) return JSON.stringify({ ok: false, error: `Video engine bulunamadı: ${script}` });
@@ -144,6 +123,29 @@ async function executeTool(action: ToolAction, files: string[]): Promise<string>
   } catch (error) {
     return JSON.stringify({ ok: false, error: error instanceof Error ? error.message : String(error) });
   }
+}
+
+function parseSimpleFileTask(task: string): { action: ToolAction; response: string } | null {
+  const normalized = normalizeCommandText(task);
+  if (!/(masaustunde|masaustu|desktop)/i.test(normalized)) return null;
+  const createMatch = normalized.match(/(?:adinda|isimli)\s+([\w.-]+)\s+adli\s+bir\s+dosya\s+olustur/i);
+  const contentMatch = task.match(/icine\s+["“”']([^"“”']+)["“”']/i);
+  if (!createMatch) return null;
+  const filename = createMatch[1];
+  const content = contentMatch?.[1] ?? "";
+  const desktopDir = path.join(path.dirname(workspace), "Desktop");
+  const target = path.resolve(desktopDir, filename);
+  const relativePath = path.relative(workspace, target);
+  if (relativePath.startsWith("..")) {
+    return {
+      action: { type: "final", summary: "Masaüstüne dosya yazma isteği workspace sınırı dışında." },
+      response: "Workspace sınırları dışında dosya oluşturamam."
+    };
+  }
+  return {
+    action: { type: "tool", tool: "create_file", path: relativePath, content },
+    response: `Dosya oluşturuldu: ${relativePath}`
+  };
 }
 
 async function runAgent(task: string): Promise<void> {
@@ -185,7 +187,7 @@ async function runAgent(task: string): Promise<void> {
   for (let step = 0; step < MAX_STEPS; step++) {
     const prompt = buildSystemPrompt(task, files, relevant.map((r) => `${r.file} [${r.score}]`), history.join("\n"), records);
     const action = extractJson(await askOllama(prompt));
-    if (!action) { console.log("\nÇırak:", action); return; }
+    if (!action) { console.log("\nÇırak: Geçerli bir araç kararı üretemedi."); return; }
     if (action.type === "final") { console.log("\n" + action.summary); return; }
     const key = actionKey(action);
     if (used.has(key)) { history.push(`Tekrar engellendi: ${key}`); continue; }
