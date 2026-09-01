@@ -84,7 +84,10 @@ ipcMain.handle("voice-speak", async (_event, text: string) => {
   await voice.speak(text);
   return true;
 });
-ipcMain.handle("voice-listen", async () => voice.listenOnce());
+ipcMain.handle("voice-listen", async (_event, engine: "auto" | "whisper" | "command" = "auto") => {
+  const result = await voice.listenOnce(engine);
+  return result;
+});
 
 app.on("before-quit", () => {
   isQuitting = true;
