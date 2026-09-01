@@ -1,0 +1,60 @@
+{
+  "theme": "flat-motion-graphics",
+  "cuts": [
+    {
+      "id": "1",
+      "type": "hero_title",
+      "text": "Bir Çocuk Hikayesi",
+      "duration": 2,
+      "transition": "fade-in"
+    },
+    {
+      "id": "2",
+      "type": "text_card",
+      "text": "Bir gün, küçük Tim bir yürüyüşe çıkıyor.",
+      "duration": 3,
+      "transition": "slide-in-left"
+    },
+    {
+      "id": "3",
+      "type": "text_card",
+      "text": "Yürüyüşüne karşı, bir sürü evcil hayvanlar karşılar.",
+      "duration": 3,
+      "transition": "slide-in-right"
+    },
+    {
+      "id": "4",
+      "type": "text_card",
+      "text": "Tim, her hayvanla oynamaya çalışır.",
+      "duration": 3,
+      "transition": "slide-in-up"
+    },
+    {
+      "id": "5",
+      "type": "hero_title",
+      "text": "Ve Sonunda...",
+      "duration": 2,
+      "transition": "fade-in"
+    },
+    {
+      "id": "6",
+      "type": "text_card",
+      "text": "Tim, herkesin arkasına düşer ve hikayesini bitirir.",
+      "duration": 3,
+      "transition": "slide-in-down"
+    },
+    {
+      "id": "7",
+      "type": "hero_title",
+      "text": "Bir Çocuk Hikayesi",
+      "duration": 2,
+      "transition": "fade-out"
+    }
+  ],
+  "overlays": [],
+  "captions": [],
+  "audio": {
+    "src": "https://example.com/childrens-story-audio.mp3",
+    "volume": 0.8
+  }
+}

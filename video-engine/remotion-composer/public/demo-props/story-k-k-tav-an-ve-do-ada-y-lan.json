@@ -1,0 +1,82 @@
+{
+  "theme": "flat-motion-graphics",
+  "cuts": [
+    {
+      "id": "story-scene-1",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 0,
+      "out_seconds": 8.0,
+      "text": "Harika bir ormanın gürültülü ve canlı bir ortamı. Tavşan, \u001b[K\normanda gezerek havalı bir yılanı görür.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-2",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 8.0,
+      "out_seconds": 16.0,
+      "text": "Tavşan, yılanın karşısında durur. Yılan, tavşana bir yılan\u001b[5D\u001b[K\nyılanın olmamış olduğunu söyler.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-3",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 16.0,
+      "out_seconds": 24.0,
+      "text": "Tavşan, yılanın ve arkadaşlarının evine gider. Yılan, tavş\u001b[4D\u001b[K\ntavşana bir kamarı gösterir.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-4",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 24.0,
+      "out_seconds": 32.0,
+      "text": "Tavşan, yılanın evine gider. Yılan, tavşana bir kamarı gös\u001b[3D\u001b[K\ngösterir.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-5",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 32.0,
+      "out_seconds": 40.0,
+      "text": "Tavşan, ormanda gezerek yeni arkadaşlar edinir.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-6",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 40.0,
+      "out_seconds": 48.0,
+      "text": "Tavşan, ormanda yeni arkadaşlarla havalı yılanla birlikte \u001b[K\noyun oynar.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    }
+  ],
+  "overlays": [
+    {
+      "type": "hero_title",
+      "in_seconds": 0,
+      "out_seconds": 4,
+      "text": "Küçük Tavşan ve Doğada Yılan",
+      "subtitle": "??rak ile ?ocuk hik?yesi",
+      "accentColor": "#FBBF24"
+    }
+  ],
+  "captions": [],
+  "audio": {
+    "narration": {
+      "src": "/audio/story-k-k-tav-an-ve-do-ada-y-lan.wav",
+      "volume": 1
+    }
+  }
+}

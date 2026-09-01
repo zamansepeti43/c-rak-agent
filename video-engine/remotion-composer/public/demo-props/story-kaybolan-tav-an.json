@@ -1,0 +1,102 @@
+{
+  "theme": "flat-motion-graphics",
+  "cuts": [
+    {
+      "id": "story-scene-1",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 0,
+      "out_seconds": 8.0,
+      "text": "Ağaçlar arasında bir tahta. Tavşan ve arkadaşları (karınca\u001b[8D\u001b[K\n(karınca, koyun, keçi) tahtaya yürüyorlar.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-2",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 8.0,
+      "out_seconds": 16.0,
+      "text": "Tahtaya ulaştıklarında, tavşan kendi adını arıyor.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-3",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 16.0,
+      "out_seconds": 24.0,
+      "text": "Koyun, tahta üzerinde yürüyor ve bir kuleyi buluyor.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-4",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 24.0,
+      "out_seconds": 32.0,
+      "text": "Kulede, tavşanın adını okuyor ve bir taşın içine yerleştir\u001b[9D\u001b[K\nyerleştiriyor.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-5",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 32.0,
+      "out_seconds": 40.0,
+      "text": "Tavşan ve arkadaşları tahta üzerinde yürüyor ve bir su dam\u001b[3D\u001b[K\ndamığı buluyor.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-6",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 40.0,
+      "out_seconds": 48.0,
+      "text": "Tavşan ve arkadaşları su damığını suyunu içiyor ve tekrar \u001b[K\ntahtaya yürüyorlar.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-7",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 48.0,
+      "out_seconds": 56.0,
+      "text": "Tavşan ve arkadaşları tahtada yürüyor ve bir mavi çiçeği b\u001b[1D\u001b[K\nbuluyor.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    },
+    {
+      "id": "story-scene-8",
+      "source": "",
+      "type": "text_card",
+      "in_seconds": 56.0,
+      "out_seconds": 64.0,
+      "text": "Tavşan ve arkadaşları mavi çiçeğini toplayıp tahtaya geri \u001b[K\ndönerler.",
+      "color": "#FFFFFF",
+      "backgroundColor": "#172554"
+    }
+  ],
+  "overlays": [
+    {
+      "type": "hero_title",
+      "in_seconds": 0,
+      "out_seconds": 4,
+      "text": "Kaybolan Tavşan",
+      "subtitle": "??rak ile ?ocuk hik?yesi",
+      "accentColor": "#FBBF24"
+    }
+  ],
+  "captions": [],
+  "audio": {
+    "narration": {
+      "src": "audio/story-kaybolan-tav-an.wav",
+      "volume": 1
+    }
+  }
+}

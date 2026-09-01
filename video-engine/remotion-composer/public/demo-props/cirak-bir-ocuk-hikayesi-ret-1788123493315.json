@@ -1,0 +1,56 @@
+{
+  "theme": "flat-motion-graphics",
+  "cuts": [
+    {
+      "id": "1",
+      "type": "hero_title",
+      "text": "Bir Çocuk Hikayesi",
+      "duration": 3,
+      "transition": "fade_in",
+      "in_seconds": 0,
+      "out_seconds": 4
+    },
+    {
+      "id": "2",
+      "type": "text_card",
+      "text": "Bir gün, bir çocuk evine döndü.",
+      "duration": 3,
+      "transition": "slide_in_right",
+      "in_seconds": 4,
+      "out_seconds": 8
+    },
+    {
+      "id": "3",
+      "type": "text_card",
+      "text": "Evdeki herkes, çocukla ne yapacağını belirleyemedi.",
+      "duration": 3,
+      "transition": "slide_in_left",
+      "in_seconds": 8,
+      "out_seconds": 12
+    },
+    {
+      "id": "4",
+      "type": "text_card",
+      "text": "Bir gün, çocuk evine döndü.",
+      "duration": 3,
+      "transition": "slide_in_right",
+      "in_seconds": 12,
+      "out_seconds": 16
+    },
+    {
+      "id": "5",
+      "type": "hero_title",
+      "text": "Bir Çocuk Hikayesi",
+      "duration": 3,
+      "transition": "fade_out",
+      "in_seconds": 16,
+      "out_seconds": 20
+    }
+  ],
+  "overlays": [],
+  "captions": [],
+  "audio": {
+    "track": "background_music.mp3",
+    "volume": 0.5
+  }
+}
